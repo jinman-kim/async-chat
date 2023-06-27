@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>FastAPI Chat</title>
+    <link rel="stylesheet" href="{{ url_for('static', path='/style.css') }}">
+</head>
+<body>
+    <h1>FastAPI Chat Room</h1>
+    <div id="chat-container"></div>
+    <form id="message-form" action="">
+        <input type="text" id="message-input" placeholder="Enter your message" />
+        <button type="submit">Send</button>
+    </form>
+
+    <script>
+        const chatContainer = document.getElementById('chat-container');
+        const messageForm = document.getElementById('message-form');
+        const messageInput = document.getElementById('message-input');
+
+        const wsProtocol = (window.location.protocol === 'https:') ? 'wss://' : 'ws://';
+        const socket = new WebSocket(`${wsProtocol}${window.location.host}/ws/1`);
+
+        socket.onmessage = (event) => {
+            const message = document.createElement('p');
+            message.textContent = event.data;
+            chatContainer.appendChild(message);
+        };
+
+        messageForm.addEventListener('submit', (event) => {
+            event.preventDefault();
+            const message = messageInput.value;
+            socket.send(message);
+            messageInput.value = '';
+        });
+    </script>
+</body>
+</html>
+
